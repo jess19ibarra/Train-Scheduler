@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="en/us">
+
+<head>
+    <meta charset="utf-8">
+    <title>Train Scheduler</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="jumbotron text-center" style="background-color:lightyellow">
+            <h1>Alright.. Alright.. Alright.. Texas Railways</h1>
+            <h2>Train Scheduler</h2>
+
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <div class="form-header">
+                    <h5 class="text-center" id="addTrainTitle">Add a Train</h5>
+                    <form id="userInputForm">
+                        <div class="form-group">
+                            <label>Train Name:</label>
+                            <input type="text" class="form-control" id="trainName">
+                        </div>
+                        <div class="form-group">
+                            <label>Destination:</label>
+                            <input type="text" class="form-control" id="destination">
+                        </div>
+                        <div class="form-group">
+                            <label>Train Time: HH:MM (Military)</label>
+                            <input type="text" class="form-control" id="firstTrainTime">
+                        </div>
+                        <div class="form-group">
+                            <label>Frequency:</label>
+                            <input type="text" class="form-control" id="frequency">
+                        </div>
+
+                        <button type="submit" class="btn btn-success" id="addTrain"
+                            style="background-color: lightpink">Add Train</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="col-9 text-center">
+                <div class="table-box">
+                    <h5 class="text-center" id="trainScheduleTitle">Train Schedule</h5>
+                    <table class="table table-hover">
+                        <thead class="tableHeader">
+                            <tr>
+                                <th scope="col">Train Name</th>
+                                <th scope="col">Destination</th>
+                                <th scope="col">Frequency</th>
+                                <th scope="col">Next Arrival</th>
+                                <th scope="col">Minutes Away</th>
+                                <th scope="col" class="removeHeader">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="/assets/javascript/app.js"></script>
+
+</body>
+
+</html>
