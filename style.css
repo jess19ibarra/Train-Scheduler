@@ -1,14 +1,15 @@
 body {
-  background-image: url(/assets/images/tracks.webp);
+  background-image: url(train.jpg);
   background-repeat: no-repeat;
-  background-size: 100%;
+  background-size: 140%;
+  background-position: center;
 } 
 
 .jumbotron {
-  padding: 15px;
+  padding: 10px;
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-weight: 800;
-  margin-top: 15px;
+  margin-top: 10px;
   border: 1px solid black;
 }
 
