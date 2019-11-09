@@ -19,45 +19,63 @@ $("#timeDisplay").text(moment().format("HH:MM A"));
 $("#addTrain").on("click", function (event) {
     event.preventDefault();
 
-    let trainName = $("#trainName").val().trim();
-    let destination = $("#destination").val().trim();
-    let firstTrainTime = $("#firstTrainTime").val().trim();
-    let frequency = $("#frequency").val().trim();
+    var trainName = $("#trainName").val().trim();
+    var destination = $("#destination").val().trim();
+    var firstTrainTime = $("#firstTrainTime").val().trim();
+    var frequency = $("#frequency").val().trim();
 
-    database.ref().push({
+    var newTrain = {
         trainName: trainName,
         destination: destination,
         firstTrainTime: firstTrainTime,
         frequency: frequency
-    });
-    $("#userInputForm").trigger("reset");
+    };
+
+    trainData.ref().push(newTrain);
+
+    console.log(newTrain.trainName);
+    console.log(newTrain.destination);
+    console.log(newTrain.firstTrainTime);
+    console.log(newTrain.frequency);
+
+    alert("Train added!")
+
+    $("#train-name-input").val("");
+    $("#destination-input").val("");
+    $("#first-train-input").val("");
+    $("#frequency-input").val("");
 });
 
 database.ref().on("child_added", function (childSnapshot) {
+    console.log(childSnapshot.val());
 
-    let newTrain = childSnapshot.val().trainName;
-    let newDestination = childSnapshot.val().destination;
-    let newFirstTrainTime = childSnapshot.val().firstTrainTime;
-    let newFrequency = childSnapshot.val().frequency;
+    var newT = childSnapshot.val().trainName;
+    var newDestination = childSnapshot.val().destination;
+    var newFirstTrainTime = childSnapshot.val().firstTrainTime;
+    var newFrequency = childSnapshot.val().frequency;
 
-    console.log(newTrain);
-    console.log(newDestination);
-    console.log(newFirstTrainTime);
-    console.log(newFrequency);
+    var arrived = newFirstTrainTime.split(":")
+    var time = moment()
+        .hours(arrived[0])
+        .minutes(arrived[1]);
+    var maxMoment = moment.max(moment(), time);
+    var minutes;
+    var tArrival;
 
-    let currentTime = moment();
+    if (maxMoment === newT) {
+        tArrival = newT.format("hh:mm A");
+        minutes = newT.diff(moment(), "minutes");
+    } else {
+        var timeDifference = moment().diff(newT, "minutes");
+        var remainingTime = timeDifference % newFrequency;
+        minutes = newFrequency - remainingTime;
 
-    let startTimeConverted = moment(newFirstTrainTime, "HH:MM ").subtract(1, "years");
-
-    let timeDifference = moment().diff(moment(startTimeConverted), "minutes");
-
-    let remainder = timeDifference % newFrequency;
-
-    let minutesAway = newFrequency - remainder;
-
-    let nextArrival = moment().add(minutesAway, "minutes").format("HH:MM  A");
-
-    let key = childSnapshot.key;
+        arrived = moment()
+            .add(minutes, "m")
+            .format("hh:mm A");
+    }
+    console.log("minutes", minutes);
+    console.log("tArrival", tArrival);
 
     $("#tableBody").append(
         "<tr><td class='text-center'>" + newTrain +
@@ -66,15 +84,10 @@ database.ref().on("child_added", function (childSnapshot) {
         "</td><td class='text-center'>" + nextArrival +
         "</td><td class='text-center'>" + minutesAway +
         "</td><td class='text-center'><button class='delete btn btn-danger btn-xs' data-key='" + key + "'>X</button></td></tr>")
-},
 
-    function (errorObject) {
-        console.log("Errors handeled: " + errorObject.code);
+    $(document).on("click", ".delete", function () {
+        keyRef = $(this).attr("data-key");
+        database.ref().child(keyRef).remove();
+        window.location.reload();
     });
-
-
-$(document).on("click", ".delete", function () {
-    keyRef = $(this).attr("data-key");
-    database.ref().child(keyRef).remove();
-    window.location.reload();
 });
