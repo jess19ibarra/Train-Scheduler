@@ -13,9 +13,6 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 
-$("#timeDisplay").text(moment().format("HH:MM A"));
-
-
 $("#addTrain").on("click", function (event) {
     event.preventDefault();
 
@@ -31,7 +28,7 @@ $("#addTrain").on("click", function (event) {
         frequency: frequency
     };
 
-    trainData.ref().push(newTrain);
+    database.ref().push(newTrain);
 
     console.log(newTrain.trainName);
     console.log(newTrain.destination);
@@ -54,40 +51,37 @@ database.ref().on("child_added", function (childSnapshot) {
     var newFirstTrainTime = childSnapshot.val().firstTrainTime;
     var newFrequency = childSnapshot.val().frequency;
 
+
     var arrived = newFirstTrainTime.split(":")
     var time = moment()
         .hours(arrived[0])
         .minutes(arrived[1]);
     var maxMoment = moment.max(moment(), time);
-    var minutes;
+    var minutesAway;
     var tArrival;
 
-    if (maxMoment === newT) {
-        tArrival = newT.format("hh:mm A");
-        minutes = newT.diff(moment(), "minutes");
+    if (maxMoment === time) {
+        tArrival = time.format("h:mm A");
+        minutesAway = time.diff(moment(), "minutes");
     } else {
-        var timeDifference = moment().diff(newT, "minutes");
+        var timeDifference = moment().diff(time, "minutes");
         var remainingTime = timeDifference % newFrequency;
-        minutes = newFrequency - remainingTime;
+        minutesAway = newFrequency - remainingTime;
 
         arrived = moment()
-            .add(minutes, "m")
-            .format("hh:mm A");
+            .add(minutesAway, "m")
+            .format("h:mm A");
     }
-    console.log("minutes", minutes);
+    console.log("tmin", minutesAway);
     console.log("tArrival", tArrival);
 
     $("#tableBody").append(
-        "<tr><td class='text-center'>" + newTrain +
-        "</td><td class='text-center'>" + newDestination +
-        "</td><td class='text-center'>" + newFrequency +
-        "</td><td class='text-center'>" + nextArrival +
-        "</td><td class='text-center'>" + minutesAway +
-        "</td><td class='text-center'><button class='delete btn btn-danger btn-xs' data-key='" + key + "'>X</button></td></tr>")
-
-    $(document).on("click", ".delete", function () {
-        keyRef = $(this).attr("data-key");
-        database.ref().child(keyRef).remove();
-        window.location.reload();
-    });
+        $("<tr>").append(
+            $("<td class='text-center'>").text(newT),
+            $("<td class='text-center'>").text(newDestination),
+            $("<td class='text-center'>").text(newFrequency),
+            $("<td class='text-center'>").text(tArrival),
+            $("<td class='text-center'>").text(minutesAway)
+        )
+    )
 });
